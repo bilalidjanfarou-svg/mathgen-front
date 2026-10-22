@@ -1,0 +1,4 @@
+.auth{max-width:420px;margin:24px auto 0;background:var(--sheet);border:1px solid var(--line);border-left:3px solid var(--margin);border-radius:4px;padding:8px 24px 24px;box-shadow:6px 6px 0 var(--line)}
+.auth label{display:block;margin:16px 0 6px;font-size:14px;color:var(--muted)}
+.auth .primary{width:100%}
+.userbox{display:flex;gap:12px;align-items:center;flex-wrap:wrap}

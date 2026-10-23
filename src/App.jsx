@@ -3,6 +3,7 @@ import { api, USE_MOCK, setSessionExpiredHandler } from "./api/client";
 import Home from "./pages/Home";
 import Exercise from "./pages/Exercise";
 import Progress from "./pages/Progress";
+import History from "./pages/History";
 import Login from "./pages/Login";
 import "./styles.css";
 
@@ -46,8 +47,9 @@ export default function App() {
         <span className="logo">MathGen</span>
         {loggedIn && (
           <nav className="userbox">
-            <button className={view !== "progress" ? "tab on" : "tab"} onClick={() => setView("home")}>Exercices</button>
+            <button className={view === "home" || view === "exercise" ? "tab on" : "tab"} onClick={() => setView("home")}>Exercices</button>
             <button className={view === "progress" ? "tab on" : "tab"} onClick={() => setView("progress")}>Progression</button>
+            <button className={view === "history" ? "tab on" : "tab"} onClick={() => setView("history")}>Historique</button>
             {user && (
               <>
                 <span className="muted">{user.username}</span>
@@ -70,6 +72,7 @@ export default function App() {
             difficulty={difficulty} onBack={() => setView("home")} />
         )}
         {!checking && loggedIn && view === "progress" && <Progress chapters={chapters} />}
+        {!checking && loggedIn && view === "history" && <History />}
       </main>
       {USE_MOCK && <footer>Mode démo : données simulées, sans backend.</footer>}
     </div>

@@ -224,26 +224,57 @@ function checkMock(ex, raw) {
   });
 }
 
+// Réponse mal écrite : message d'aide, sans compter l'essai (comme le backend).
+function unreadable(ex, raw) {
+  const s = raw.trim();
+  if (ex.kind === "number" && Number.isNaN(parseNum(s))) return "Écris un nombre (5 ou -2,5) ou une fraction (7/2).";
+  if (ex.kind === "interval" && !/^[\[\]].+;.+[\[\]]$/.test(normI(s)))
+    return "Écris un intervalle avec ses crochets et un point-virgule, par exemple ]-∞ ; 3[.";
+  if (ex.kind === "set" && nums(s).length === 0)
+    return "Écris les solutions séparées par des points-virgules, par exemple {-1 ; 4}.";
+  if (ex.kind === "vector" && nums(s).length !== ex.expected.length)
+    return "Écris les deux coordonnées, par exemple (2 ; -3).";
+  if (ex.kind === "expr" && Number.isNaN(evalExpr(s, 1)))
+    return "Écris une expression en x, par exemple 3x^2 - 6x (utilise ^ pour les puissances).";
+  return null;
+}
+
 let nextId = 1;
+const historyLog = [];
 const store = {};
 const stats = {};
 
 const mockApi = {
   chapters: async () => CHAPTERS,
   generate: async (chapter_id, difficulty) => {
-    const ex = { ...GENERATORS[chapter_id](difficulty), chapter_id };
+    const ex = { ...GENERATORS[chapter_id](difficulty), chapter_id, difficulty };
     const id = nextId++;
     store[id] = ex;
     return { id, statement_latex: ex.statement, answer_type: ex.type, hint: ex.hint };
   },
   answer: async (id, answer) => {
     const ex = store[id];
+    const problem = unreadable(ex, answer);
+    if (problem) throw new Error(problem);
     const correct = checkMock(ex, answer);
+    const chap = CHAPTERS.find((c) => c.id === ex.chapter_id);
+    historyLog.push({
+      id: historyLog.length + 1,
+      chapter: chap.name,
+      level: chap.level,
+      difficulty: ex.difficulty,
+      statement_latex: ex.statement,
+      answer,
+      is_correct: correct,
+      explanation_latex: ex.explanation,
+      created_at: new Date().toISOString(),
+    });
     const st = (stats[ex.chapter_id] ||= { attempts: 0, correct: 0 });
     st.attempts++;
     if (correct) st.correct++;
     return { correct, explanation_latex: ex.explanation };
   },
+  history: async () => [...historyLog].reverse(),
   progress: async () =>
     Object.entries(stats).map(([id, s]) => ({
       chapter_id: +id,

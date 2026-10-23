@@ -1,0 +1,11 @@
+.entry{margin:12px 0;padding:14px 16px;background:var(--sheet);border:1px solid var(--line);border-left:3px solid var(--margin);border-radius:4px}
+.entry:first-of-type{margin-top:16px}
+.entryTop{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px}
+.entryStatement{margin:10px 0 6px;font:18px/1.6 Georgia,"Times New Roman",serif}
+.entryAnswer{margin:0 0 8px;color:var(--muted)}
+.entryAnswer code{color:var(--ink)}
+.entry summary{cursor:pointer;color:var(--accent);min-height:32px}
+.entry details p{margin:6px 0 0;font-family:Georgia,"Times New Roman",serif}
+.badge{padding:2px 10px;border:1px solid;border-radius:999px;font-size:13px;font-weight:600}
+.badge.ok{color:var(--ok);background:var(--okbg);border-color:var(--ok)}
+.badge.ko{color:var(--ko);background:var(--kobg);border-color:var(--ko)}

@@ -35,14 +35,18 @@ function errorMessage(data, status) {
   return `Erreur ${status}`;
 }
 
-function send(path, options = {}, access) {
-  return fetch(`${BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(access && { Authorization: `Bearer ${access}` }),
-    },
-  });
+async function send(path, options = {}, access) {
+  try {
+    return await fetch(`${BASE}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(access && { Authorization: `Bearer ${access}` }),
+      },
+    });
+  } catch {
+    throw new Error("Impossible de joindre le serveur. Vérifie ta connexion et que Django est lancé.");
+  }
 }
 
 // Le jeton d'accès dure 30 minutes : on en demande un nouveau avec le jeton de renouvellement.
@@ -94,6 +98,7 @@ const realApi = {
       body: JSON.stringify({ answer }),
     }),
   progress: () => request("/progress/"),
+  history: () => request("/history/"),
 
   register: async (username, password) => {
     tokens.set(await authPost("/auth/register/", { username, password }));
